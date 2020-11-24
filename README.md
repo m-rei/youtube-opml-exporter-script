@@ -15,6 +15,6 @@ Just install Greasemonkey in Firefox, create a new script and copy & paste the c
 Whenever you visit
 > https://www.youtube.com/feed/channels
 
-it will automatically start a download of the OPML file which it created by scraping the content of the site.
+it will automatically download the OPML file which it created by scraping the content of the site.
 
 This script could potentiall be used by Chrome via its Tampermonkey addon, but I have not tested it.
