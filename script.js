@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name     youtubeSubscriptionManagerOpmlExporter
-// @version  1
-// @match		 http://*.youtube.com/feed/channels
-// @match		 https://*.youtube.com/feed/channels
-// @grant    none
+// @name	youtubeSubscriptionManagerOpmlExporter
+// @version	1
+// @match	http://*.youtube.com/feed/channels
+// @match	https://*.youtube.com/feed/channels
+// @grant	none
 // ==/UserScript==
 
 download(buildOpmlFile(extractChannels()));
@@ -41,10 +41,11 @@ function buildOpmlFile(channels) {
 \t<body>
 \t\t<outline text="YouTube Subscriptions" title="YouTube Subscriptions">`;
   for (item of channels) {
+    let n = item.name.replaceAll("#", "%23");
     if (item.cid) {
-	    opmlFile += `\n\t\t\t<outline text="${item.name}" title="${item.name}" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=${item.cid}" />`;
+	    opmlFile += `\n\t\t\t<outline text="${n}" title="${n}" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=${item.cid}" />`;
     } else {
-	    opmlFile += `\n\t\t\t<outline text="${item.name}" title="${item.name}" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?user=${item.uid}" />`;
+	    opmlFile += `\n\t\t\t<outline text="${n}" title="${n}" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?user=${item.uid}" />`;
     }
   }
   opmlFile += `
@@ -57,7 +58,7 @@ function buildOpmlFile(channels) {
 
 function download(opmlFile) {
   var a = document.createElement("a");
-  a.href = "data:text," + escape(opmlFile);
+  a.href = "data:text;charset=utf-8," + opmlFile;
   a.download = "subscription_manager";
   a.click();
 }
