@@ -12,9 +12,6 @@ where there is no button to export your subscription list as an OMPL file, i.e.
 
 Just install Greasemonkey in Firefox, create a new script and copy & paste the code found here.
 
-Whenever you visit
-> https://www.youtube.com/feed/channels
+It will add two download buttons (top & bottom) to the page with which you can do an opml export!
 
-it will add two download buttons (top & bottom) with which you can export the opml file.
-
-This script could potentiall be used by Chrome via its Tampermonkey addon, but I have not tested it.
+This script could potentially be used by Chrome via its Tampermonkey addon, but I have not tested it.
