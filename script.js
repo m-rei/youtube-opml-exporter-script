@@ -6,7 +6,7 @@
 // @grant	none
 // ==/UserScript==
 
-download(buildOpmlFile(extractChannels()));
+download(encodeURIComponent(buildOpmlFile(extractChannels())));
 
 function extractChannels() {
   var channels = []
