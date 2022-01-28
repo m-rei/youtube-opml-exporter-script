@@ -41,7 +41,7 @@ function buildOpmlFile(channels) {
 \t<body>
 \t\t<outline text="YouTube Subscriptions" title="YouTube Subscriptions">`;
   for (item of channels) {
-    let n = item.name.replaceAll("#", "%23");
+    let n = item.name.replaceAll("#", "%23").replaceAll("&", "&amp;");
     if (item.cid) {
 	    opmlFile += `\n\t\t\t<outline text="${n}" title="${n}" type="rss" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=${item.cid}" />`;
     } else {
