@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name	youtubeSubscriptionManagerOpmlExporter
-// @version	1
+// @version	2
 // @match	http://*.youtube.com/feed/channels
 // @match	https://*.youtube.com/feed/channels
 // @grant	none
 // ==/UserScript==
 
-download(encodeURIComponent(buildOpmlFile(extractChannels())));
+addDownloadButtons();
 
 function extractChannels() {
   var channels = []
@@ -61,4 +61,27 @@ function download(opmlFile) {
   a.href = "data:text;charset=utf-8," + opmlFile;
   a.download = "subscription_manager";
   a.click();
+}
+
+function addDownloadButtons() {
+  let node1 = document.querySelector("#dismissible .grid-subheader.style-scope.ytd-shelf-renderer");
+  let node2 = document.querySelector("#dismissible #contents");
+  if (!node1 && !node2) return;
+  if (node1) node1.appendChild(createDownloadButton());
+  if (node2) node2.appendChild(createDownloadButton());
+  
+}
+
+function createDownloadButton() {
+    let buttonDiv = document.createElement("div");
+  buttonDiv.style.marginLeft = "50%";
+
+  let button = document.createElement("button");
+  button.type = "button";
+  button.innerText = "export opml";
+  button.onclick = () => {
+    download(encodeURIComponent(buildOpmlFile(extractChannels())));
+  }
+  buttonDiv.appendChild(button);
+  return buttonDiv;
 }
