@@ -64,16 +64,14 @@ function download(opmlFile) {
 }
 
 function addDownloadButtons() {
-  let node1 = document.querySelector("#dismissible .grid-subheader.style-scope.ytd-shelf-renderer");
-  let node2 = document.querySelector("#dismissible #contents");
-  if (!node1 && !node2) return;
-  if (node1) node1.appendChild(createDownloadButton());
-  if (node2) node2.appendChild(createDownloadButton());
-  
+  let node = document.querySelector("#dismissible .grid-subheader.style-scope.ytd-shelf-renderer");
+  if (node) node.appendChild(createDownloadButton());
+  node = document.querySelector("#dismissible #contents");
+  if (node) node.appendChild(createDownloadButton());
 }
 
 function createDownloadButton() {
-    let buttonDiv = document.createElement("div");
+  let buttonDiv = document.createElement("div");
   buttonDiv.style.marginLeft = "50%";
 
   let button = document.createElement("button");
@@ -83,5 +81,6 @@ function createDownloadButton() {
     download(encodeURIComponent(buildOpmlFile(extractChannels())));
   }
   buttonDiv.appendChild(button);
+
   return buttonDiv;
 }
