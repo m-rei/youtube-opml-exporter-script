@@ -1,20 +1,35 @@
 // ==UserScript==
 // @name	youtubeSubscriptionManagerOpmlExporter
-// @version	2
+// @version	3
 // @match	http://*.youtube.com/feed/channels
 // @match	https://*.youtube.com/feed/channels
 // @grant	none
 // ==/UserScript==
 
-addDownloadButtons();
+(new MutationObserver(check)).observe(document, {childList: true, subtree: true});
 
-function extractChannels() {
-  var channels = []
+function check(changes, observer) {
+  let requiredNode = document.querySelector("#dismissible .grid-subheader.style-scope.ytd-shelf-renderer");
+  if (!requiredNode) return;
+
+  requiredNode = document.querySelector("#dismissible #contents");
+  if (!requiredNode) return;
+
+  // both nodes exist at this point, can disconnect and execute own logic
+  observer.disconnect();
+  addDownloadButtons();
+}
+
+async function extractChannels() {
+  var channels = [];
+  let channelsToFetch = [];
 
   let items = document.querySelectorAll("a#main-link");
   for (item of items) {
     let name = item.querySelector("yt-formatted-string.ytd-channel-name").textContent;
-    if (item.href.includes(".com/user/")) {
+    if (item.href.includes("@")) {
+      channelsToFetch.push(item.href);
+    } else if (item.href.includes(".com/user/")) {
       var idRegEx = /.com\/user\/(.*)$/g;
       let uid = idRegEx.exec(item.href)[1];
 
@@ -32,7 +47,36 @@ function extractChannels() {
       });
     }
   }
-  
+
+  let promises = [];
+  for (channelToFetch of channelsToFetch) {
+    const promise = fetch(channelToFetch)
+      .then(resp => resp.text())
+      .then(body => {
+        let rssRegEx = /href=".*?com\/feeds\/videos\.xml\?channel_id=(.*?)"/g;
+        let regExResult = rssRegEx.exec(body);
+        let cid = regExResult == null ? null : regExResult[1];
+
+        if (cid == null) {
+          let orgUrlRegEx = /og:url.*?com\/channel\/(.*?)"/g;
+          regExResult = orgUrlRegEx.exec(body);
+          cid = regExResult == null ? null : regExResult[1];
+        }
+
+        if (cid) {
+          channels.push({
+            "cid":   cid,
+            "name": name
+          });
+        }
+      });
+    promises.push(promise);
+  }
+
+  if (promises.length > 0) {
+    await Promise.all(promises);
+  }
+
   return channels;
 }
 
@@ -77,8 +121,13 @@ function createDownloadButton() {
   let button = document.createElement("button");
   button.type = "button";
   button.innerText = "export opml";
-  button.onclick = () => {
-    download(encodeURIComponent(buildOpmlFile(extractChannels())));
+  button.onclick = async () => {
+    button.disabled = true;
+    let oldText = button.innerText;
+    button.innerText = 'please wait...'
+    download(encodeURIComponent(buildOpmlFile(await extractChannels())));
+    button.innerText = oldText;
+    button.disabled = false;
   }
   buttonDiv.appendChild(button);
 
